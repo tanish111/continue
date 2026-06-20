@@ -57,14 +57,3 @@ npm link @continuedev/core
 # npm run prepackage # not required since npm run package has prescript of prepackage
 npm run package
 popd
-
-echo "Installing binary dependencies..."
-pushd binary
-npm install
-npm run build
-popd
-
-echo "Installing docs dependencies..."
-pushd docs
-npm install
-popd
