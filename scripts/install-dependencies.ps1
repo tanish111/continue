@@ -103,19 +103,3 @@ npm run prepackage
 npm run package
 
 Pop-Location
-
-
-Write-Output "`nInstalling binary dependencies..." -ForegroundColor White
-Push-Location binary
-
-npm install
-npm run build
-
-Pop-Location
-
-Write-Output "`nInstalling docs dependencies..." -ForegroundColor White
-Push-Location docs
-
-npm install
-
-Pop-Location
