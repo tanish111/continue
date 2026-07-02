@@ -16,6 +16,7 @@ import { selectUseActiveFile } from "../../redux/selectors";
 import {
   selectHideModelSelector,
   selectHideModeSelector,
+  selectIdeSettings,
   selectSelectedChatModel,
 } from "../../redux/slices/configSlice";
 import { setHasReasoningEnabled } from "../../redux/slices/sessionSlice";
@@ -63,6 +64,14 @@ function InputToolbar(props: InputToolbarProps) {
   );
   const hideModeSelector = useAppSelector(selectHideModeSelector);
   const hideModelSelector = useAppSelector(selectHideModelSelector);
+  const ideSettings = useAppSelector(selectIdeSettings);
+  const {
+    hideAtMentionButton = false,
+    hideImageUploadButton = false,
+    hideReasoningButton = false,
+    hideActiveFileIndicator = false,
+    hideEnterButton = false,
+  } = ideSettings ?? {};
   const isEnterDisabled =
     props.disabled || (isInEdit && codeToEdit.length === 0);
 
@@ -106,6 +115,7 @@ function InputToolbar(props: InputToolbarProps) {
           )}
           <div className="xs:flex text-description -mb-1 hidden items-center transition-colors duration-200">
             {props.toolbarOptions?.hideImageUpload ||
+              hideImageUploadButton ||
               (supportsImages && (
                 <>
                   <input
@@ -136,14 +146,14 @@ function InputToolbar(props: InputToolbarProps) {
                   </ToolTip>
                 </>
               ))}
-            {props.toolbarOptions?.hideAddContext || (
+            {props.toolbarOptions?.hideAddContext || hideAtMentionButton || (
               <ToolTip place="top" content="Attach Context">
                 <HoverItem onClick={props.onAddContextItem}>
                   <AtSymbolIcon className="h-3 w-3 hover:brightness-125" />
                 </HoverItem>
               </ToolTip>
             )}
-            {supportsReasoning && (
+            {supportsReasoning && !hideReasoningButton && (
               <HoverItem
                 onClick={() => {
                   dispatch(setHasReasoningEnabled(!hasReasoningEnabled));
@@ -183,7 +193,9 @@ function InputToolbar(props: InputToolbarProps) {
           }}
         >
           {!isInEdit && <ContextStatus />}
-          {!props.toolbarOptions?.hideUseCodebase && !isInEdit && (
+          {!props.toolbarOptions?.hideUseCodebase &&
+            !isInEdit &&
+            !hideActiveFileIndicator && (
             <div className="hidden transition-colors duration-200 hover:underline md:flex">
               <HoverItem
                 className={
@@ -229,29 +241,31 @@ function InputToolbar(props: InputToolbarProps) {
               </span>
             </HoverItem>
           )}
-          <ToolTip place="top" content="Send (⏎)">
-            <Button
-              variant={props.isMainInput ? "primary" : "secondary"}
-              size="sm"
-              data-testid="submit-input-button"
-              onClick={async (e) => {
-                if (props.onEnter) {
-                  props.onEnter({
-                    useCodebase: false,
-                    noContext: useActiveFile
-                      ? isMetaEquivalentKeyPressed(e as any) || e.altKey
-                      : !(isMetaEquivalentKeyPressed(e as any) || e.altKey),
-                  });
-                }
-              }}
-              disabled={isEnterDisabled}
-            >
-              <span className="hidden md:inline">
-                ⏎ {props.toolbarOptions?.enterText ?? "Enter"}
-              </span>
-              <span className="md:hidden">⏎</span>
-            </Button>
-          </ToolTip>
+          {!hideEnterButton && (
+            <ToolTip place="top" content="Send (⏎)">
+              <Button
+                variant={props.isMainInput ? "primary" : "secondary"}
+                size="sm"
+                data-testid="submit-input-button"
+                onClick={async (e) => {
+                  if (props.onEnter) {
+                    props.onEnter({
+                      useCodebase: false,
+                      noContext: useActiveFile
+                        ? isMetaEquivalentKeyPressed(e as any) || e.altKey
+                        : !(isMetaEquivalentKeyPressed(e as any) || e.altKey),
+                    });
+                  }
+                }}
+                disabled={isEnterDisabled}
+              >
+                <span className="hidden md:inline">
+                  ⏎ {props.toolbarOptions?.enterText ?? "Enter"}
+                </span>
+                <span className="md:hidden">⏎</span>
+              </Button>
+            </ToolTip>
+          )}
         </div>
       </div>
     </>
