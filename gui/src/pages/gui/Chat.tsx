@@ -27,6 +27,7 @@ import { TabBar } from "../../components/TabBar/TabBar";
 import { IdeMessengerContext } from "../../context/IdeMessenger";
 import { useWebviewListener } from "../../hooks/useWebviewListener";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { selectIdeSettings } from "../../redux/slices/configSlice";
 import {
   selectDoneApplyStates,
   selectPendingToolCalls,
@@ -124,6 +125,8 @@ export function Chat() {
   const isInEdit = useAppSelector((store) => store.session.isInEdit);
 
   const lastSessionId = useAppSelector((state) => state.session.lastSessionId);
+  const hideLastSessionButton =
+    useAppSelector(selectIdeSettings)?.hideLastSessionButton ?? false;
   const hasDismissedExploreDialog = useAppSelector(
     (state) => state.ui.hasDismissedExploreDialog,
   );
@@ -428,7 +431,10 @@ export function Chat() {
         >
           <div className="flex flex-row items-center justify-between pb-1 pl-0.5 pr-2">
             <div className="xs:inline hidden">
-              {history.length === 0 && lastSessionId && !isInEdit && (
+              {history.length === 0 &&
+                lastSessionId &&
+                !isInEdit &&
+                !hideLastSessionButton && (
                 <NewSessionButton
                   onClick={async () => {
                     await dispatch(loadLastSession());
