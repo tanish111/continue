@@ -10,6 +10,7 @@ import Handlebars from "handlebars";
 
 import { DevDataSqliteDb } from "../data/devdataSqlite.js";
 import { DataLogger } from "../data/log.js";
+import { TokenUsageSqliteDb } from "../data/tokenUsageSqlite.js";
 import {
   CacheBehavior,
   ChatMessage,
@@ -87,6 +88,12 @@ export function isModelInstaller(provider: any): provider is ModelInstaller {
 
 type InteractionStatus = "in_progress" | "success" | "error" | "cancelled";
 
+/**
+ * Providers for which per-model token caps (maxInputTokens, maxOutputTokens,
+ * maxCachedTokens) are tracked and enforced.
+ */
+const TOKEN_CAP_PROVIDERS = ["openai", "anthropic", "gemini"];
+
 export abstract class BaseLLM implements ILLM {
   static providerName: string;
   static defaultOptions: Partial<LLMOptions> | undefined = undefined;
@@ -150,6 +157,9 @@ export abstract class BaseLLM implements ILLM {
   basePlanSystemMessage?: string;
   baseAgentSystemMessage?: string;
   _contextLength: number | undefined;
+  maxInputTokens?: number;
+  maxOutputTokens?: number;
+  maxCachedTokens?: number;
   maxStopWords?: number | undefined;
   completionOptions: CompletionOptions;
   requestOptions?: RequestOptions;
@@ -227,6 +237,9 @@ export abstract class BaseLLM implements ILLM {
     this.basePlanSystemMessage = options.basePlanSystemMessage;
     this.baseChatSystemMessage = options.baseChatSystemMessage;
     this._contextLength = options.contextLength ?? llmInfo?.contextLength;
+    this.maxInputTokens = options.maxInputTokens;
+    this.maxOutputTokens = options.maxOutputTokens;
+    this.maxCachedTokens = options.maxCachedTokens;
     this.maxStopWords = options.maxStopWords ?? this.maxStopWords;
     this.completionOptions = {
       ...options.completionOptions,
@@ -356,6 +369,18 @@ export abstract class BaseLLM implements ILLM {
       promptTokens,
       generatedTokens,
     );
+
+    if (TOKEN_CAP_PROVIDERS.includes(this.providerName)) {
+      // Record cumulative usage for per-model token cap enforcement.
+      // Prefer provider-reported usage; fall back to locally counted tokens.
+      void TokenUsageSqliteDb.addUsage(
+        model,
+        this.providerName,
+        usage?.promptTokens ?? promptTokens,
+        usage?.completionTokens ?? generatedTokens,
+        usage?.promptTokensDetails?.cachedTokens ?? 0,
+      );
+    }
 
     void DataLogger.getInstance().logDevData({
       name: "tokensGenerated",
