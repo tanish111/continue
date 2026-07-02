@@ -694,6 +694,13 @@ class VsCodeIde implements IDE {
         "pauseCodebaseIndexOnStart",
         false,
       ),
+      hideSettingsIcon: settings.get<boolean>("hideSettingsIcon", false),
+      hideModelSelector: settings.get<boolean>("hideModelSelector", false),
+      hideModeSelector: settings.get<boolean>("hideModeSelector", false),
+      defaultMode: settings.get<"chat" | "plan" | "agent">(
+        "defaultMode",
+        "agent",
+      ),
     };
     return ideSettings;
   }

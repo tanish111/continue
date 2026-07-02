@@ -816,6 +816,10 @@ export interface IdeSettings {
   userToken: string;
   continueTestEnvironment: "none" | "production" | "staging" | "local";
   pauseCodebaseIndexOnStart: boolean;
+  hideSettingsIcon?: boolean;
+  hideModelSelector?: boolean;
+  hideModeSelector?: boolean;
+  defaultMode?: MessageModes;
 }
 
 export interface FileStats {

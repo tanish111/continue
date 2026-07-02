@@ -622,6 +622,10 @@ export class VsCodeExtension {
       if (event.affectsConfiguration(EXTENSION_NAME)) {
         const settings = await this.ide.getIdeSettings();
         void this.core.invoke("config/ideSettingsUpdate", settings);
+        void this.sidebar.webviewProtocol.request(
+          "config/ideSettingsUpdate",
+          settings,
+        );
 
         if (event.affectsConfiguration(`${EXTENSION_NAME}.enableNextEdit`)) {
           await this.updateNextEditState(context);

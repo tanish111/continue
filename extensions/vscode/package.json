@@ -147,6 +147,31 @@
           "type": "number",
           "default": 60,
           "description": "The period of time in minutes between automatic syncs."
+        },
+        "continue.hideSettingsIcon": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the settings (gear) icons on the main chat window, including the gear in the config selector dropdown and the gear icons inside the model selector dropdown."
+        },
+        "continue.hideModelSelector": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the model selector dropdown in the chat input toolbar."
+        },
+        "continue.hideModeSelector": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Hide the mode (Chat/Plan/Agent) selector dropdown in the chat input toolbar. When hidden, the mode is forced to `#continue.defaultMode#`."
+        },
+        "continue.defaultMode": {
+          "type": "string",
+          "enum": [
+            "chat",
+            "plan",
+            "agent"
+          ],
+          "default": "agent",
+          "markdownDescription": "The mode enforced when the mode selector is hidden via `#continue.hideModeSelector#`."
         }
       }
     },
