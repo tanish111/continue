@@ -27,6 +27,13 @@ type MockResponseHandlers = Partial<{
 
 const DEFAULT_MOCK_CORE_RESPONSES: MockResponses = {
   fileExists: true,
+  getIdeSettings: {
+    remoteConfigServerUrl: undefined,
+    remoteConfigSyncPeriod: 60,
+    userToken: "",
+    continueTestEnvironment: "none",
+    pauseCodebaseIndexOnStart: false,
+  },
   getCurrentFile: {
     isUntitled: false,
     contents: "Current file contents",
