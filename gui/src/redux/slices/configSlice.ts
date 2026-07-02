@@ -1,12 +1,13 @@
 import { ConfigResult, ConfigValidationError } from "@continuedev/config-yaml";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BrowserSerializedContinueConfig } from "core";
+import { BrowserSerializedContinueConfig, IdeSettings } from "core";
 import { DEFAULT_CONTEXT_LENGTH } from "core/llm/constants";
 
 export type ConfigState = {
   configError: ConfigValidationError[] | undefined;
   config: BrowserSerializedContinueConfig;
   loading: boolean;
+  ideSettings: IdeSettings | null;
 };
 
 export const EMPTY_CONFIG: BrowserSerializedContinueConfig = {
@@ -41,6 +42,7 @@ export const INITIAL_CONFIG_SLICE: ConfigState = {
   configError: undefined,
   config: EMPTY_CONFIG,
   loading: false,
+  ideSettings: null,
 };
 
 export const configSlice = createSlice({
@@ -80,6 +82,12 @@ export const configSlice = createSlice({
     setConfigLoading: (state, { payload: loading }: PayloadAction<boolean>) => {
       state.loading = loading;
     },
+    setIdeSettings: (
+      state,
+      { payload: ideSettings }: PayloadAction<IdeSettings>,
+    ) => {
+      state.ideSettings = ideSettings;
+    },
   },
   selectors: {
     selectSelectedChatModelContextLength: (state): number => {
@@ -94,16 +102,36 @@ export const configSlice = createSlice({
     selectUIConfig: (state) => {
       return state.config?.ui ?? null;
     },
+    selectHideSettingsIcon: (state): boolean => {
+      return state.ideSettings?.hideSettingsIcon ?? false;
+    },
+    selectHideModelSelector: (state): boolean => {
+      return state.ideSettings?.hideModelSelector ?? false;
+    },
+    selectHideModeSelector: (state): boolean => {
+      return state.ideSettings?.hideModeSelector ?? false;
+    },
+    selectDefaultMode: (state) => {
+      return state.ideSettings?.defaultMode ?? "agent";
+    },
+    selectIdeSettings: (state) => {
+      return state.ideSettings;
+    },
   },
 });
 
-export const { updateConfig, setConfigResult, setConfigLoading } =
+export const { updateConfig, setConfigResult, setConfigLoading, setIdeSettings } =
   configSlice.actions;
 
 export const {
   selectSelectedChatModelContextLength,
   selectUIConfig,
   selectSelectedChatModel,
+  selectHideSettingsIcon,
+  selectHideModelSelector,
+  selectHideModeSelector,
+  selectDefaultMode,
+  selectIdeSettings,
 } = configSlice.selectors;
 
 export default configSlice.reducer;

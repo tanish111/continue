@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/Auth";
 import { IdeMessengerContext } from "../../context/IdeMessenger";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { selectHideSettingsIcon } from "../../redux/slices/configSlice";
 import { setSelectedProfile } from "../../redux/slices/profilesSlice";
 import { getMetaKeyLabel, isMetaEquivalentKeyPressed } from "../../util";
 import { cn } from "../../util/cn";
@@ -35,6 +36,7 @@ export function AssistantAndOrgListbox({
   const ideMessenger = useContext(IdeMessengerContext);
   const { profiles, selectedProfile, refreshProfiles } = useAuth();
   const configLoading = useAppSelector((store) => store.config.loading);
+  const hideSettingsIcon = useAppSelector(selectHideSettingsIcon);
   const tinyFont = useFontSize(-4);
 
   function close() {
@@ -122,17 +124,19 @@ export function AssistantAndOrgListbox({
                 >
                   <PlusIcon className="text-description h-3.5 w-3.5" />
                 </Button>
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onConfigsConfig();
-                  }}
-                  variant="ghost"
-                  size="sm"
-                  className="my-0 h-5 w-5 p-0"
-                >
-                  <Cog6ToothIcon className="text-description h-3.5 w-3.5" />
-                </Button>
+                {!hideSettingsIcon && (
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onConfigsConfig();
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className="my-0 h-5 w-5 p-0"
+                  >
+                    <Cog6ToothIcon className="text-description h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
             </div>
 

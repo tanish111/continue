@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/Auth";
 import { AddModelForm } from "../../forms/AddModelForm";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { selectHideSettingsIcon } from "../../redux/slices/configSlice";
 import { setDialogMessage, setShowDialog } from "../../redux/slices/uiSlice";
 import { updateSelectedModelByRole } from "../../redux/thunks/updateSelectedModelByRole";
 import { getMetaKeyLabel, isMetaEquivalentKeyPressed } from "../../util";
@@ -66,6 +67,7 @@ function ModelOption({
   isSelected,
 }: ModelOptionProps) {
   const navigate = useNavigate();
+  const hideSettingsIcon = useAppSelector(selectHideSettingsIcon);
 
   function handleOptionClick(e: any) {
     if (showMissingApiKeyMsg) {
@@ -104,14 +106,16 @@ function ModelOption({
             )}
           </span>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-description-muted hover:enabled:text-foreground my-0 h-4 w-4 p-0 opacity-0 transition-opacity group-hover:opacity-100"
-          onClick={handleConfigureClick}
-        >
-          <Cog6ToothIcon className="h-3.5 w-3.5" />
-        </Button>
+        {!hideSettingsIcon && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-description-muted hover:enabled:text-foreground my-0 h-4 w-4 p-0 opacity-0 transition-opacity group-hover:opacity-100"
+            onClick={handleConfigureClick}
+          >
+            <Cog6ToothIcon className="h-3.5 w-3.5" />
+          </Button>
+        )}
       </div>
     </ListboxOption>
   );
@@ -128,6 +132,7 @@ function ModelSelect() {
   const [options, setOptions] = useState<Option[]>([]);
   const [sortedOptions, setSortedOptions] = useState<Option[]>([]);
   const { selectedProfile } = useAuth();
+  const hideSettingsIcon = useAppSelector(selectHideSettingsIcon);
   const tinyFont = useFontSize(-4);
 
   let selectedModel = null;
@@ -263,17 +268,19 @@ function ModelSelect() {
           <div className="flex items-center justify-between px-1.5 py-1">
             <span className="text-description text-xs font-medium">Models</span>
             <div className="flex items-center gap-0.5">
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClickConfigureModels(e);
-                }}
-                variant="ghost"
-                size="sm"
-                className="my-0 h-5 w-5 p-0"
-              >
-                <Cog6ToothIcon className="text-description h-3.5 w-3.5" />
-              </Button>
+              {!hideSettingsIcon && (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClickConfigureModels(e);
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  className="my-0 h-5 w-5 p-0"
+                >
+                  <Cog6ToothIcon className="text-description h-3.5 w-3.5" />
+                </Button>
+              )}
             </div>
           </div>
 
@@ -302,19 +309,23 @@ function ModelSelect() {
 
           {!isConfigLoading && (
             <>
-              <Divider className="!mb-0" />
-              <ListboxOption
-                key={options.length}
-                onClick={onClickAddModel}
-                value={"addModel" as any}
-                fontSizeModifier={-2}
-                className="px-2 py-2"
-              >
-                <span className="text-description text-2xs flex flex-row items-center">
-                  <PlusIcon className="mr-1.5 h-3.5 w-3.5" />
-                  Add Chat model
-                </span>
-              </ListboxOption>
+              {!hideSettingsIcon && (
+                <>
+                  <Divider className="!mb-0" />
+                  <ListboxOption
+                    key={options.length}
+                    onClick={onClickAddModel}
+                    value={"addModel" as any}
+                    fontSizeModifier={-2}
+                    className="px-2 py-2"
+                  >
+                    <span className="text-description text-2xs flex flex-row items-center">
+                      <PlusIcon className="mr-1.5 h-3.5 w-3.5" />
+                      Add Chat model
+                    </span>
+                  </ListboxOption>
+                </>
+              )}
 
               <Divider className="!my-0" />
               <div className="text-description flex items-center justify-start p-2">

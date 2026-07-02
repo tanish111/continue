@@ -3,7 +3,13 @@ import { IdeMessengerContext } from "../context/IdeMessenger";
 
 import { FromCoreProtocol } from "core/protocol";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setConfigLoading, setConfigResult } from "../redux/slices/configSlice";
+import {
+  selectDefaultMode,
+  selectHideModeSelector,
+  setConfigLoading,
+  setConfigResult,
+  setIdeSettings,
+} from "../redux/slices/configSlice";
 import { setLastNonEditSessionEmpty } from "../redux/slices/editState";
 import { updateIndexingStatus } from "../redux/slices/indexingSlice";
 import {
@@ -157,6 +163,33 @@ function ParallelListeners() {
       void dispatch(updateFileSymbolsFromHistory());
     }
   }, [sessionId]);
+
+  // Load IDE settings (e.g. UI visibility preferences) from the IDE
+  useEffect(() => {
+    ideMessenger.ide
+      .getIdeSettings()
+      .then((settings) => {
+        dispatch(setIdeSettings(settings));
+      })
+      .catch(() => {
+        // IDE settings are optional; ignore failures (e.g. in tests)
+      });
+  }, [ideMessenger]);
+
+  // Live updates when the user changes IDE settings
+  useWebviewListener("config/ideSettingsUpdate", async (settings) => {
+    dispatch(setIdeSettings(settings));
+  });
+
+  // When the mode selector is hidden, enforce the configured default mode
+  const hideModeSelector = useAppSelector(selectHideModeSelector);
+  const defaultMode = useAppSelector(selectDefaultMode);
+  const currentMode = useAppSelector((store) => store.session.mode);
+  useEffect(() => {
+    if (hideModeSelector && currentMode !== defaultMode) {
+      dispatch(setMode(defaultMode));
+    }
+  }, [hideModeSelector, defaultMode, currentMode]);
 
   // ON LOAD
   useEffect(() => {

@@ -694,6 +694,35 @@ class VsCodeIde implements IDE {
         "pauseCodebaseIndexOnStart",
         false,
       ),
+      hideSettingsIcon: settings.get<boolean>("hideSettingsIcon", false),
+      hideModelSelector: settings.get<boolean>("hideModelSelector", false),
+      hideModeSelector: settings.get<boolean>("hideModeSelector", false),
+      defaultMode: settings.get<"chat" | "plan" | "agent">(
+        "defaultMode",
+        "agent",
+      ),
+      hideRulesButton: settings.get<boolean>("hideRulesButton", false),
+      hideToolsButton: settings.get<boolean>("hideToolsButton", false),
+      hideModelsButton: settings.get<boolean>("hideModelsButton", false),
+      hideAssistantSelector: settings.get<boolean>(
+        "hideAssistantSelector",
+        false,
+      ),
+      hideAtMentionButton: settings.get<boolean>("hideAtMentionButton", false),
+      hideImageUploadButton: settings.get<boolean>(
+        "hideImageUploadButton",
+        false,
+      ),
+      hideReasoningButton: settings.get<boolean>("hideReasoningButton", false),
+      hideActiveFileIndicator: settings.get<boolean>(
+        "hideActiveFileIndicator",
+        false,
+      ),
+      hideEnterButton: settings.get<boolean>("hideEnterButton", false),
+      hideLastSessionButton: settings.get<boolean>(
+        "hideLastSessionButton",
+        false,
+      ),
     };
     return ideSettings;
   }

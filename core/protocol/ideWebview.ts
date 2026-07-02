@@ -7,6 +7,7 @@ import {
   ApplyState,
   ApplyToFilePayload,
   HighlightedCodePayload,
+  IdeSettings,
   MessageContent,
   RangeInFileWithContents,
   SetCodeToEditPayload,
@@ -79,4 +80,5 @@ export type ToWebviewFromIdeProtocol = ToWebviewFromIdeOrCoreProtocol & {
   exitEditMode: [undefined, void];
   focusEdit: [undefined, void];
   addToChat: [AddToChatPayload, void];
+  "config/ideSettingsUpdate": [IdeSettings, void];
 };
