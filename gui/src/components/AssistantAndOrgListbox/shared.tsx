@@ -7,6 +7,8 @@ import {
 import { useState } from "react";
 import styled from "styled-components";
 import { lightGray } from "..";
+import { useAppSelector } from "../../redux/hooks";
+import { selectHideSettingsIcon } from "../../redux/slices/configSlice";
 import { cn } from "../../util/cn";
 import { ToolTip } from "../gui/Tooltip";
 
@@ -144,6 +146,7 @@ export function Option({
   onOpenConfig,
 }: ModelOptionProps) {
   const [hovered, setHovered] = useState(false);
+  const hideSettingsIcon = useAppSelector(selectHideSettingsIcon);
 
   function handleOptionClick(e: any) {
     if (disabled) {
@@ -167,7 +170,7 @@ export function Option({
           {children}
           <div className="ml-2 flex items-center">
             {!errors?.length ? (
-              showConfigure ? (
+              hideSettingsIcon ? null : showConfigure ? (
                 <StyledCog6ToothIcon
                   $hovered={hovered}
                   onClick={(e) => {

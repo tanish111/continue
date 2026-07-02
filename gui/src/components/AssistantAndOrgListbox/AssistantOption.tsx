@@ -6,7 +6,8 @@ import { ProfileDescription } from "core/config/ProfileLifecycleManager";
 import { useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { IdeMessengerContext } from "../../context/IdeMessenger";
-import { useAppDispatch } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { selectHideSettingsIcon } from "../../redux/slices/configSlice";
 import { setSelectedProfile } from "../../redux/slices/profilesSlice";
 import { CONFIG_ROUTES } from "../../util/navigation";
 import { ToolTip } from "../gui/Tooltip";
@@ -28,6 +29,7 @@ export function AssistantOption({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const ideMessenger = useContext(IdeMessengerContext);
+  const hideSettingsIcon = useAppSelector(selectHideSettingsIcon);
 
   const hasFatalErrors = useMemo(() => {
     return !!profile.errors?.find((error) => error.fatal);
@@ -65,20 +67,22 @@ export function AssistantOption({
           </span>
         </div>
         <div className="flex flex-row items-center gap-1.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-description-muted hover:enabled:text-foreground my-0 h-4 w-4 p-0 opacity-0 transition-opacity group-hover:opacity-100"
-            onClick={(e) => {
-              e.stopPropagation();
-              ideMessenger.post("config/openProfile", {
-                profileId: profile.id,
-              });
-              onClick(); // Close the listbox
-            }}
-          >
-            <Cog6ToothIcon className="h-3.5 w-3.5" />
-          </Button>
+          {!hideSettingsIcon && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-description-muted hover:enabled:text-foreground my-0 h-4 w-4 p-0 opacity-0 transition-opacity group-hover:opacity-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                ideMessenger.post("config/openProfile", {
+                  profileId: profile.id,
+                });
+                onClick(); // Close the listbox
+              }}
+            >
+              <Cog6ToothIcon className="h-3.5 w-3.5" />
+            </Button>
+          )}
           {profile.errors && profile.errors?.length > 0 && (
             <ToolTip content="View errors">
               <Button
