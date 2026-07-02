@@ -653,6 +653,12 @@ export interface LLMOptions {
   baseChatSystemMessage?: string;
   autocompleteOptions?: Partial<TabAutocompleteOptions>;
   contextLength?: number;
+  /** Hard cap on cumulative prompt/input tokens for this model (openai/anthropic/gemini only) */
+  maxInputTokens?: number;
+  /** Hard cap on cumulative generated/output tokens for this model (openai/anthropic/gemini only) */
+  maxOutputTokens?: number;
+  /** Hard cap on cumulative cached (cache-read) tokens for this model (openai/anthropic/gemini only) */
+  maxCachedTokens?: number;
   maxStopWords?: number;
   completionOptions?: CompletionOptions;
   requestOptions?: RequestOptions;
@@ -1237,6 +1243,9 @@ export interface ModelDescription {
   onPremProxyUrl?: string | null;
 
   contextLength?: number;
+  maxInputTokens?: number;
+  maxOutputTokens?: number;
+  maxCachedTokens?: number;
   maxStopWords?: number;
   template?: TemplateType;
   completionOptions?: BaseCompletionOptions;
@@ -1714,6 +1723,9 @@ export interface JSONModelDescription {
   apiBase?: string;
 
   contextLength?: number;
+  maxInputTokens?: number;
+  maxOutputTokens?: number;
+  maxCachedTokens?: number;
   maxStopWords?: number;
   template?: TemplateType;
   completionOptions?: BaseCompletionOptions;
