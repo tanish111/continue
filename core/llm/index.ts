@@ -566,6 +566,78 @@ export abstract class BaseLLM implements ILLM {
     return { completionOptions, logEnabled: log, raw };
   }
 
+  /**
+   * Enforces per-model token caps (maxInputTokens, maxOutputTokens,
+   * maxCachedTokens) against cumulative usage persisted in SQLite.
+   *
+   * - Throws an LLMError if the output cap is exhausted, otherwise clamps
+   *   `completionOptions.maxTokens` to the remaining output budget.
+   * - Throws an LLMError if this request's prompt would exceed the input cap.
+   * - Disables prompt caching for the request once the cached-token cap is
+   *   reached.
+   *
+   * Only applies to openai/anthropic/gemini providers; no-op otherwise.
+   * Mutates `completionOptions` in place.
+   */
+  private async _enforceTokenCaps(
+    completionOptions: CompletionOptions,
+    promptTokens: number,
+  ): Promise<void> {
+    if (!TOKEN_CAP_PROVIDERS.includes(this.providerName)) {
+      return;
+    }
+    if (
+      this.maxInputTokens === undefined &&
+      this.maxOutputTokens === undefined &&
+      this.maxCachedTokens === undefined
+    ) {
+      return;
+    }
+
+    const usage = await TokenUsageSqliteDb.getUsage(
+      this.model,
+      this.providerName,
+    );
+
+    if (this.maxOutputTokens !== undefined) {
+      if (usage.outputTokens >= this.maxOutputTokens) {
+        throw new LLMError(
+          `Output token cap reached for model "${this.model}" (${this.providerName}): ` +
+            `${usage.outputTokens} output tokens used, cap is maxOutputTokens=${this.maxOutputTokens}. ` +
+            `The request was blocked.`,
+          this,
+        );
+      }
+      // Clamp maxTokens to the remaining output budget so the cap cannot be
+      // overshot by more than a single request.
+      const remainingOutputTokens = this.maxOutputTokens - usage.outputTokens;
+      completionOptions.maxTokens = Math.min(
+        completionOptions.maxTokens ?? remainingOutputTokens,
+        remainingOutputTokens,
+      );
+    }
+
+    if (
+      this.maxInputTokens !== undefined &&
+      usage.inputTokens + promptTokens > this.maxInputTokens
+    ) {
+      throw new LLMError(
+        `Input token cap exceeded for model "${this.model}" (${this.providerName}): ` +
+          `${usage.inputTokens} input tokens used and this request requires ~${promptTokens} more, ` +
+          `but the cap is maxInputTokens=${this.maxInputTokens}. The request was blocked.`,
+        this,
+      );
+    }
+
+    if (
+      this.maxCachedTokens !== undefined &&
+      usage.cachedTokens >= this.maxCachedTokens
+    ) {
+      // Cached-token cap reached: disable prompt caching rather than blocking.
+      completionOptions.promptCaching = false;
+    }
+  }
+
   private _formatChatMessages(messages: ChatMessage[]): string {
     const msgsCopy = messages ? messages.map((msg) => ({ ...msg })) : [];
     let formatted = "";
@@ -624,6 +696,9 @@ export abstract class BaseLLM implements ILLM {
     let status: InteractionStatus = "in_progress";
 
     const fimLog = `Prefix: ${prefix}\nSuffix: ${suffix}`;
+
+    await this._enforceTokenCaps(completionOptions, this.countTokens(fimLog));
+
     if (logEnabled) {
       interaction?.logItem({
         kind: "startFim",
@@ -748,6 +823,8 @@ export abstract class BaseLLM implements ILLM {
     if (!raw) {
       prompt = this._templatePromptLikeMessages(prompt);
     }
+
+    await this._enforceTokenCaps(completionOptions, this.countTokens(prompt));
 
     if (logEnabled) {
       interaction?.logItem({
@@ -881,6 +958,8 @@ export abstract class BaseLLM implements ILLM {
     if (!raw) {
       prompt = this._templatePromptLikeMessages(prompt);
     }
+
+    await this._enforceTokenCaps(completionOptions, this.countTokens(prompt));
 
     if (logEnabled) {
       interaction?.logItem({
@@ -1174,6 +1253,8 @@ export abstract class BaseLLM implements ILLM {
     const prompt = this.templateMessages
       ? this.templateMessages(messagesCopy)
       : this._formatChatMessages(messagesCopy);
+
+    await this._enforceTokenCaps(completionOptions, this.countTokens(prompt));
 
     if (logEnabled) {
       interaction?.logItem({
