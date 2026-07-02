@@ -13,7 +13,11 @@ import { memo, useContext, useRef } from "react";
 import { IdeMessengerContext } from "../../context/IdeMessenger";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { selectUseActiveFile } from "../../redux/selectors";
-import { selectSelectedChatModel } from "../../redux/slices/configSlice";
+import {
+  selectHideModelSelector,
+  selectHideModeSelector,
+  selectSelectedChatModel,
+} from "../../redux/slices/configSlice";
 import { setHasReasoningEnabled } from "../../redux/slices/sessionSlice";
 import { setReasoningSetting } from "../../redux/slices/uiSlice";
 import { exitEdit } from "../../redux/thunks/edit";
@@ -57,6 +61,8 @@ function InputToolbar(props: InputToolbarProps) {
   const hasReasoningEnabled = useAppSelector(
     (store) => store.session.hasReasoningEnabled,
   );
+  const hideModeSelector = useAppSelector(selectHideModeSelector);
+  const hideModelSelector = useAppSelector(selectHideModelSelector);
   const isEnterDisabled =
     props.disabled || (isInEdit && codeToEdit.length === 0);
 
@@ -84,18 +90,20 @@ function InputToolbar(props: InputToolbarProps) {
         }}
       >
         <div className="xs:gap-1.5 flex flex-row items-center gap-1">
-          {!isInEdit && (
+          {!isInEdit && !hideModeSelector && (
             <ToolTip place="top" content="Select Mode">
               <HoverItem className="!p-0">
                 <ModeSelect />
               </HoverItem>
             </ToolTip>
           )}
-          <ToolTip place="top" content="Select Model">
-            <HoverItem className="!p-0">
-              <ModelSelect />
-            </HoverItem>
-          </ToolTip>
+          {!hideModelSelector && (
+            <ToolTip place="top" content="Select Model">
+              <HoverItem className="!p-0">
+                <ModelSelect />
+              </HoverItem>
+            </ToolTip>
+          )}
           <div className="xs:flex text-description -mb-1 hidden items-center transition-colors duration-200">
             {props.toolbarOptions?.hideImageUpload ||
               (supportsImages && (

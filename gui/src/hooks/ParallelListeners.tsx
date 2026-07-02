@@ -4,6 +4,8 @@ import { IdeMessengerContext } from "../context/IdeMessenger";
 import { FromCoreProtocol } from "core/protocol";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
+  selectDefaultMode,
+  selectHideModeSelector,
   setConfigLoading,
   setConfigResult,
   setIdeSettings,
@@ -178,6 +180,16 @@ function ParallelListeners() {
   useWebviewListener("config/ideSettingsUpdate", async (settings) => {
     dispatch(setIdeSettings(settings));
   });
+
+  // When the mode selector is hidden, enforce the configured default mode
+  const hideModeSelector = useAppSelector(selectHideModeSelector);
+  const defaultMode = useAppSelector(selectDefaultMode);
+  const currentMode = useAppSelector((store) => store.session.mode);
+  useEffect(() => {
+    if (hideModeSelector && currentMode !== defaultMode) {
+      dispatch(setMode(defaultMode));
+    }
+  }, [hideModeSelector, defaultMode, currentMode]);
 
   // ON LOAD
   useEffect(() => {
