@@ -114,6 +114,9 @@ export const configSlice = createSlice({
     selectDefaultMode: (state) => {
       return state.ideSettings?.defaultMode ?? "agent";
     },
+    selectIdeSettings: (state) => {
+      return state.ideSettings;
+    },
   },
 });
 
@@ -128,6 +131,7 @@ export const {
   selectHideModelSelector,
   selectHideModeSelector,
   selectDefaultMode,
+  selectIdeSettings,
 } = configSlice.selectors;
 
 export default configSlice.reducer;

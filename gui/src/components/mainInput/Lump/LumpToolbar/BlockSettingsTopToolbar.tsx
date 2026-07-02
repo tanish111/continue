@@ -12,6 +12,7 @@ import {
   selectPendingToolCalls,
   selectToolCallsByStatus,
 } from "../../../../redux/selectors/selectToolCalls";
+import { selectIdeSettings } from "../../../../redux/slices/configSlice";
 import { setSelectedProfile } from "../../../../redux/slices/profilesSlice";
 import { ToolTip } from "../../../gui/Tooltip";
 import HoverItem from "../../InputToolbar/HoverItem";
@@ -32,6 +33,13 @@ export function BlockSettingsTopToolbar() {
   const callingToolCalls = useAppSelector((state) =>
     selectToolCallsByStatus(state, "calling"),
   );
+  const ideSettings = useAppSelector(selectIdeSettings);
+  const {
+    hideRulesButton = false,
+    hideToolsButton = false,
+    hideModelsButton = false,
+    hideAssistantSelector = false,
+  } = ideSettings ?? {};
   const hasActiveContent =
     pendingToolCalls.length > 0 || callingToolCalls.length > 0;
 
@@ -95,32 +103,40 @@ export function BlockSettingsTopToolbar() {
 
         {!hasActiveContent && (
           <div className="flex items-center gap-1.5">
-            <ToolTip content="Configure rules">
-              <HoverItem onClick={handleRulesClick} px={2}>
-                <PencilIcon className="text-description-muted h-3 w-3 hover:brightness-125" />
-              </HoverItem>
-            </ToolTip>
+            {!hideRulesButton && (
+              <ToolTip content="Configure rules">
+                <HoverItem onClick={handleRulesClick} px={2}>
+                  <PencilIcon className="text-description-muted h-3 w-3 hover:brightness-125" />
+                </HoverItem>
+              </ToolTip>
+            )}
 
-            <ToolTip content="Configure tools">
-              <HoverItem onClick={handleToolsClick} px={2}>
-                <WrenchScrewdriverIcon className="text-description-muted h-3 w-3 hover:brightness-125" />
-              </HoverItem>
-            </ToolTip>
+            {!hideToolsButton && (
+              <ToolTip content="Configure tools">
+                <HoverItem onClick={handleToolsClick} px={2}>
+                  <WrenchScrewdriverIcon className="text-description-muted h-3 w-3 hover:brightness-125" />
+                </HoverItem>
+              </ToolTip>
+            )}
 
-            <ToolTip content="Configure models">
-              <HoverItem onClick={handleModelsClick} px={2}>
-                <CubeIcon className="text-description-muted h-3 w-3 hover:brightness-125" />
-              </HoverItem>
-            </ToolTip>
+            {!hideModelsButton && (
+              <ToolTip content="Configure models">
+                <HoverItem onClick={handleModelsClick} px={2}>
+                  <CubeIcon className="text-description-muted h-3 w-3 hover:brightness-125" />
+                </HoverItem>
+              </ToolTip>
+            )}
           </div>
         )}
       </div>
 
-      <ToolTip place="top" content="Select Config">
-        <div>
-          <AssistantAndOrgListbox variant="lump" />
-        </div>
-      </ToolTip>
+      {!hideAssistantSelector && (
+        <ToolTip place="top" content="Select Config">
+          <div>
+            <AssistantAndOrgListbox variant="lump" />
+          </div>
+        </ToolTip>
+      )}
     </div>
   );
 }
