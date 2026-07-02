@@ -79,6 +79,9 @@ async function modelConfigToBaseLLM({
   let options: LLMOptions = {
     ...rest,
     contextLength,
+    maxInputTokens: model.maxInputTokens,
+    maxOutputTokens: model.maxOutputTokens,
+    maxCachedTokens: model.maxCachedTokens,
     completionOptions: {
       ...(model.defaultCompletionOptions ?? {}),
       model: model.model,

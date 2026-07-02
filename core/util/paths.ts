@@ -237,6 +237,10 @@ export function getDevDataSqlitePath(): string {
   return path.join(getDevDataPath(), "devdata.sqlite");
 }
 
+export function getTokenUsageSqlitePath(): string {
+  return path.join(getDevDataPath(), "tokenUsage.sqlite");
+}
+
 export function getDevDataFilePath(
   eventName: DevEventName,
   schema: string,
