@@ -172,6 +172,66 @@
           ],
           "default": "agent",
           "markdownDescription": "The mode enforced when the mode selector is hidden via `#continue.hideModeSelector#`."
+        },
+        "continue.hideNewSessionButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the new session (+) button in the Continue view title bar."
+        },
+        "continue.hideHistoryButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the session history button in the Continue view title bar."
+        },
+        "continue.hideRulesButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the configure rules (pencil) button in the top toolbar of the chat window."
+        },
+        "continue.hideToolsButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the configure tools (wrench) button in the top toolbar of the chat window."
+        },
+        "continue.hideModelsButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the configure models (cube) button in the top toolbar of the chat window."
+        },
+        "continue.hideAssistantSelector": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the config/assistant selector dropdown in the top toolbar of the chat window."
+        },
+        "continue.hideAtMentionButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the attach context (@) button in the chat input toolbar."
+        },
+        "continue.hideImageUploadButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the image upload button in the chat input toolbar."
+        },
+        "continue.hideReasoningButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the model reasoning toggle (lightbulb) in the chat input toolbar."
+        },
+        "continue.hideActiveFileIndicator": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the active file / codebase hint in the chat input toolbar."
+        },
+        "continue.hideEnterButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the Enter (submit) button in the chat input toolbar. Submitting with the Enter key still works."
+        },
+        "continue.hideLastSessionButton": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide the 'Last Session' link shown below the chat input when starting a new session."
         }
       }
     },

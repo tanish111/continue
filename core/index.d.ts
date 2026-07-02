@@ -820,6 +820,16 @@ export interface IdeSettings {
   hideModelSelector?: boolean;
   hideModeSelector?: boolean;
   defaultMode?: MessageModes;
+  hideRulesButton?: boolean;
+  hideToolsButton?: boolean;
+  hideModelsButton?: boolean;
+  hideAssistantSelector?: boolean;
+  hideAtMentionButton?: boolean;
+  hideImageUploadButton?: boolean;
+  hideReasoningButton?: boolean;
+  hideActiveFileIndicator?: boolean;
+  hideEnterButton?: boolean;
+  hideLastSessionButton?: boolean;
 }
 
 export interface FileStats {
